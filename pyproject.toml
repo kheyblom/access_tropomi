@@ -1,0 +1,18 @@
+[project]
+name = "tropomi_access"
+version = "0.1.0"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "h5netcdf>=1.8.1",
+    "jupyter>=1.1.1",
+    "netcdf4>=1.7.4",
+    "numpy>=2.4.2",
+    "pyyaml>=6.0.2",
+    "requests>=2.32.0",
+    "xarray>=2026.2.0",
+]
+
+[tool.uv]
+# only ever build the venv on a uv-managed interpreter; otherwise uv falls back
+# to any matching python on PATH (e.g. miniconda), which the venv then depends on
+python-preference = "only-managed"
