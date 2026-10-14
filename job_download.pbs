@@ -1,0 +1,27 @@
+#!/bin/bash
+# Fallback only. The normal way to run this is ./run_download.sh on a login
+# node; a download is network bound and a login node has outbound internet.
+# Use this job instead if a login node run keeps getting killed, or if the
+# transfer needs to be left running for longer than a session should be.
+#
+# Submit from the repository directory, so the job starts there:
+#
+#   qsub -A "$PBS_ACCOUNT" job_download.pbs
+#
+# Casper, not Derecho: Derecho compute nodes have no outbound internet, so
+# the TROPOMI server cannot be reached from one. Several TB may not finish
+# inside the walltime; the run is restartable, so resubmit and it picks up
+# exactly what is still missing.
+
+#PBS -N tropomi_download
+#PBS -q casper
+#PBS -l select=1:ncpus=2:mem=8GB
+#PBS -l walltime=24:00:00
+#PBS -j oe
+#PBS -o logs/tropomi_download.pbs.log
+
+set -euo pipefail
+
+cd "${PBS_O_WORKDIR}"
+
+uv run python tropomi_download.py --config config/config_download.yaml
