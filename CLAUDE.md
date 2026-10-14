@@ -21,8 +21,26 @@ working step, so that a new session can resume without re-deriving anything.
 - Task 1 (this CLAUDE.md) and task 2 (git repo, `origin` connected) are done
   (2026-10-14). The first commit (`afde1e0`) holds `.gitignore` (sibling copy plus
   `logs/*.pid`), `CLAUDE.md` and `TASKS.md`. It is pushed to `origin/main`.
-- Next: task 3. Plan the build with the user first (the proposed design is below and in
-  TASKS.md). Nothing is built yet.
+- Task 3 (build) is done except for the review of the full dry run (2026-10-14). The user
+  approved the proposed design. These exist: `tropomi_download.py`,
+  `config/config_download.yaml` (the whole record, into the existing tree) and
+  `config/config_download_tiny.yaml` (2024-06-01 only, into `data/tropomi_tiny/`),
+  `utils/`, `run_download.sh`, `job_download.pbs` (Casper, 24 h), `README.md`,
+  `tropomi_search.ipynb`, and a uv venv on uv's cpython-3.13.12. All are committed.
+- Tiny dry run: 13 files, 12.29 GB, access check passed. Some remote orbit directories
+  hold the processor's `log0003_<orbit>_NN.txt` and `error0003_<orbit>_NN.txt` (24 of
+  them in 3 orbits in 2024-06) and may have no `.nc`. These are counted and ignored.
+- **In progress when the session ended:** the full `--dry-run`, started detached
+  (`setsid nohup nice -n 19`) at 16:05 on **derecho2** as pid 1387346. Output is in
+  `logs/dryrun_full.out` and is also appended to `logs/tropomi_download.log`. It lists 97
+  months (2017-11 to 2025-11) at about 15 s each, then stats every expected file and
+  audits the local tree, so it takes about 30 min in all. The last line is `dry run,
+  nothing downloaded`. Check it with `tail logs/dryrun_full.out`; it is alive if
+  `ssh derecho2 'kill -0 1387346'` succeeds.
+- Next: review the dry run numbers (per year: present, missing, wrong size; and the
+  audit's local-only, stray and partial files) with the user, record them in TASKS.md
+  (task 3 results and task 5), then go on to task 4 (the tiny test). A dry run writes no
+  pid file.
 
 ## Settled design choices (with the user, 2026-10-14)
 

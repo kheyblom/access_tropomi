@@ -22,6 +22,12 @@ Plan it with me before building. The proposed design:
 - `--dry-run` reports remote files and bytes, files already present, files missing, files present with the wrong size, and local files with no remote counterpart, all broken down by year.
 - end with a verification pass against the remote sizes. It exits non-zero if anything is missing, and a rerun picks up exactly those files.
 
+Build (2026-10-14, design approved):
+- `tropomi_download.py`, `config/config_download.yaml` (everything, into the existing tree) and `config/config_download_tiny.yaml` (2024-06-01 into `data/tropomi_tiny/`), `utils/`, `run_download.sh`, `job_download.pbs` (Casper fallback), `README.md`, `tropomi_search.ipynb`, and a uv venv (Python 3.13.12).
+- selection is `date_range` (ISO dates, `null` = everything) rather than `year_range`, so the smoke test can be a single day.
+- tiny dry run: 13 files, 12.29 GB, access check passed. Remote orbit directories sometimes hold processor `log*.txt`/`error*.txt` files and no `.nc`; these are ignored.
+- full dry run: started detached on derecho2, results pending (`logs/dryrun_full.out`).
+
 # 4. Test the pipeline
 Run the tiny config end-to-end before any real download. One day is ~14 files, ~14 GB, and goes into a separate scratch directory. Test on a login node, which costs no core-hours.
 - `./run_download.sh config/config_download_tiny.yaml`. Check `--status`, the per-worker logs, a clean verification pass and `done :-)`.
