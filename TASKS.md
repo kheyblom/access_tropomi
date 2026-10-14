@@ -3,7 +3,7 @@ We need to build a pipeline that downloads the TROPOMI L2 HDO data product (SRON
 # 1. init CLAUDE.md for the codebase [COMPLETED]
 Write a CLAUDE.md in the same shape as `../access_imerg/CLAUDE.md`: purpose, *Current working state*, environment and commands, a product/remote section (see *Remote and local facts* below), sibling conventions, compute and allocation, and git. Pull in the conventions and lessons recorded in the sibling repos, especially imerg (the most complete, and the most recent).
 
-# 2. init a git repo
+# 2. init a git repo [COMPLETED]
 Initialize a git repo here and connect it to the remote (see general notes).
 - `origin` fetches over HTTPS and pushes over SSH (`git@github.com:kheyblom/access_tropomi.git`), as the siblings do, because HTTPS has no credential helper on this system.
 - branch `main`. Copy the sibling `.gitignore`. Add a `.gitignore` rule for anything the run writes into the repo.

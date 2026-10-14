@@ -18,11 +18,11 @@ working step, so that a new session can resume without re-deriving anything.
 
 ## Current working state
 
-- Task 1 (this CLAUDE.md) is complete (2026-10-14).
-- Next: task 2. Init the git repo, then connect `origin` to
-  `https://github.com/kheyblom/access_tropomi.git` (it was empty on 2026-10-14). Make
-  the first commit `TASKS.md`, `CLAUDE.md` and the sibling `.gitignore`.
-- Nothing is built yet. The repo holds only `TASKS.md` and `CLAUDE.md`.
+- Task 1 (this CLAUDE.md) and task 2 (git repo, `origin` connected) are done
+  (2026-10-14). The first commit (`afde1e0`) holds `.gitignore` (sibling copy plus
+  `logs/*.pid`), `CLAUDE.md` and `TASKS.md`. It is pushed to `origin/main`.
+- Next: task 3. Plan the build with the user first (the proposed design is below and in
+  TASKS.md). Nothing is built yet.
 
 ## Settled design choices (with the user, 2026-10-14)
 
