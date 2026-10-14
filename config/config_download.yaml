@@ -1,0 +1,17 @@
+directories:
+  # the existing record; files land under <download>/tropomi.grid.surfsara.nl/
+  # mirroring the server, so what is already on disk is picked up in place
+  download: /glade/derecho/scratch/kheyblom/data/wisosat/raw/TROPOMI/
+  logs: ./logs
+log_file: tropomi_download.log
+# few workers, to stay polite to a research group's server
+n_processes: 4
+remote: https://tropomi.grid.surfsara.nl/
+product: hdo
+# the version in the filename, s5p_l2_hdo_<version>_<orbit>.nc; quoted so YAML
+# keeps the leading zeros
+processor_version: '0003'
+# inclusive ['YYYY-MM-DD', 'YYYY-MM-DD'], or null for the whole record
+date_range: null
+# attempts per file before it is reported failed; a rerun retries it again
+retries: 3

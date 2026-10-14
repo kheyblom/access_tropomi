@@ -1,0 +1,11 @@
+directories:
+  download: /glade/derecho/scratch/kheyblom/data/tropomi_tiny/
+  logs: ./logs
+log_file: tropomi_download_tiny.log
+n_processes: 2
+remote: https://tropomi.grid.surfsara.nl/
+product: hdo
+processor_version: '0003'
+# one day, about 15 files and 15 GB
+date_range: ['2024-06-01', '2024-06-01']
+retries: 3
