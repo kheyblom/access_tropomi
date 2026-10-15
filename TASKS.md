@@ -29,7 +29,7 @@ Build (2026-10-14, design approved):
 - full dry run (2026-10-14, ~25 min, login node, `nice -n 19`): 97 months (2017-11 to 2025-11), 38,648 files, 33.85 TB, all processor version 0003. 30,712 present, **7,936 to download (7.31 TB): 7,848 missing, 88 of the wrong size**. No warnings or errors. Access check passed. Full output: `logs/dryrun_full.out`.
 - follow-up: the dry run now also lists missing files by month, every wrong-size file (local vs remote bytes), and stray files by kind.
 
-# 4. Test the pipeline
+# 4. Test the pipeline [COMPLETED]
 Run the tiny config end-to-end before any real download. One day is ~14 files, ~14 GB, and goes into a separate scratch directory. Test on a login node, which costs no core-hours.
 - `./run_download.sh config/config_download_tiny.yaml`. Check `--status`, the per-worker logs, a clean verification pass and `done :-)`.
 - rerun it and confirm every file is skipped.
@@ -37,11 +37,20 @@ Run the tiny config end-to-end before any real download. One day is ~14 files, ~
 - spot-check that a downloaded file opens with xarray/netCDF4.
 - fix anything found, commit, and delete the test data (with my okay).
 
+Results (2026-10-15, login node derecho1, 2 workers):
+- run: about 50 MB/s per worker (~100 MB/s total), about 20 s per ~1 GB file. No errors.
+- `kill -INT` after 8 of 13 files: both in-flight `.part` files were swept, the pid file was removed, and no processes were left.
+- resume: 8 present, 5 downloaded, verified 13/13 (12.29 GB), `done :-)`.
+- wrong-size path: trimmed one file by 549 bytes (like SRON's rewrites). The rerun re-fetched only that file, restored its size, and verified 13/13.
+- rerun: all 13 present, nothing to download, verified, `done :-)`.
+- files open with xarray (`group='target_product'`, `'instrument'`): `nobs` 897,195, `deltad` finite, latitudes -78 to 90.
+- nothing needed fixing. The test data (`data/tropomi_tiny/`, 12.3 GB) is still on disk until I okay deleting it.
+
 # 5. Audit the existing local data
 Dry-run the real config against the existing tree, then report back before anything downloads (mostly done with the task 3 dry run; rerun the full dry run with the new per-month and wrong-size detail before task 6):
 - missing files by year and month, with their total size, and a check that the quota covers it.
 - local files whose size differs from the remote (possible truncated earlier transfers). Task 6 re-downloads these.
-- stray files from earlier copies: `.DS_Store`, `.smbdelete*`, `*.nc?action=show` (seen 2026-10-14). Cleanup only with my approval.
+- stray files from earlier copies: `.DS_Store`, `.smbdelete*`, `*.nc?action=show` (seen 2026-10-14). Cleanup only with my approval. **Removed on 2026-10-15 at my request**: 200 files (197 `.DS_Store`, 1 `.smbdelete*`, 2 `*?action=show`), deleted from an explicit list. The tree now holds only `s5p_l2_hdo_*.nc` files.
 - local files with no remote counterpart.
 
 Results so far (2026-10-14/15):

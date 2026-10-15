@@ -38,8 +38,17 @@ working step, so that a new session can resume without re-deriving anything.
   that keeps the size the same goes unnoticed.
 - The dry run now also logs missing files by month, every wrong-size file and stray
   files by kind (`log_todo_details`, `stray_kind`).
-- Next: task 4 (the tiny test, 13 files and 12.3 GB, 2024-06-01, on a login node).
-  Waiting on the user to start it, and on a decision about cleaning up the 198 strays.
+- The 200 stray files in the existing tree were deleted at the user's request
+  (2026-10-15). The tree holds only `s5p_l2_hdo_*.nc` files.
+- Task 4 is complete (2026-10-15); the details are in TASKS.md. These all passed: the
+  run, `kill -INT` cleanup, resume, re-fetching a wrong-size file, and the all-skip
+  rerun. Throughput was about 50 MB/s per worker. At 4 workers, if the server scales,
+  the 7.31 TB gap is roughly 10–20 h.
+- The test data is still at `/glade/derecho/scratch/kheyblom/data/tropomi_tiny/`
+  (13 files, 12.3 GB). Delete it only with the user's okay.
+- Next: task 5 wrap-up (rerun the full dry run for the new detail, and inspect the 4
+  wrong-size files outside 2023), then task 6, the real download, which needs the
+  user's approval and a choice of route.
 
 ## Settled design choices (with the user, 2026-10-14)
 
