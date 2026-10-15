@@ -84,6 +84,8 @@ Fetch everything the audit lists as missing or the wrong size into the existing 
 Run (approved 2026-10-15: login node, monitored):
 - started 2026-10-15 ~09:27 on derecho1 with `./run_download.sh` (4 workers, `nice -n 19`), together with `monitor_download.sh`, which logs every 5 min to `logs/tropomi_download_monitor.log` and stops the run at > 2 cores or > 2 GiB RSS. The login node caps the user at 8 CPUs and 10 GiB.
 - expected: transfers start ~09:45 after the listing. 7.31 TB at 100–200 MB/s is 10–21 h.
+- first samples (09:44–09:49): 0.5–0.6 cores, ~340 MB RSS, 148–161 MB/s; node load ~5–6, 270 GB free. Estimated finish ~23:00–23:30 2026-10-15. The user cgroup sits at its 10 GiB cap, but ~4.5 GB of that is inactive page cache, and there are 0 OOM kills.
+- server-side failure: `2018/08/18/4379` answered 500 after ~3 min hanging, on all 3 attempts (and a direct curl timed out). Probably a dCache pool or file that is unavailable, which is likely also why it was missing locally. Expect the other missing files from 2017–2020 (33) to behave the same. They will be listed in the final verification. If a rerun cannot get them either, email SRON (t.borsdorff@sron.nl) with the list.
 
 # Later (not scheduled)
 - keeping the record current with periodic top-up reruns, if SRON keeps adding data (the `hdo/2025` directory was last modified 2025-11-10).
