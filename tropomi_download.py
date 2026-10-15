@@ -504,6 +504,54 @@ def log_status_by_year(files, statuses):
         )
 
 
+def stray_kind(name):
+    """Group a stray file by what most likely left it.
+
+    Args:
+        name (str): The file name.
+
+    Returns:
+        str: e.g. '.DS_Store' (macOS Finder), '.smbdelete*' (an SMB copy),
+            '*?action=show' (wget following the server's 'show' links), or
+            'other'.
+    """
+    if name == '.DS_Store':
+        return '.DS_Store'
+    if name.startswith('.smbdelete'):
+        return '.smbdelete*'
+    if '?action=' in name:
+        return '*?action=show'
+    return 'other'
+
+
+def log_todo_details(files, statuses):
+    """Log the missing files by month, and every file of the wrong size.
+
+    Args:
+        files (list): (url, local_path, size, day) tuples.
+        statuses (list): The local_status of each file, in the same order.
+    """
+    missing = Counter(
+        f'{day.year}-{day.month:02d}'
+        for (_, _, _, day), status in zip(files, statuses) if status == 'missing'
+    )
+    if missing:
+        LOG.info('missing by month: ' + ', '.join(f'{m} {n}' for m, n in sorted(missing.items())))
+    wrong = [
+        (local_path, size)
+        for (_, local_path, size, _), status in zip(files, statuses) if status == 'wrong_size'
+    ]
+    LOG.info(f'{len(wrong)} files of the wrong size, to be fetched again')
+    for local_path, size in wrong[:AUDIT_LIST_LIMIT]:
+        local_size = os.path.getsize(local_path)
+        LOG.info(
+            f'  wrong size: {local_path} is {local_size} bytes, remote {size} '
+            f'({100 * local_size / size:.1f}%)'
+        )
+    if len(wrong) > AUDIT_LIST_LIMIT:
+        LOG.info(f'  ... and {len(wrong) - AUDIT_LIST_LIMIT} more')
+
+
 def audit_local(settings, months, date_range, expected):
     """Report local files the run would neither download nor verify.
 
@@ -559,7 +607,12 @@ def audit_local(settings, months, date_range, expected):
             for name in filenames:
                 classify(os.path.join(directory, name), name)
 
-    for label, paths in (('local only', local_only), ('stray', stray), ('partial', partial)):
+    kinds = Counter(stray_kind(os.path.basename(path)) for path in stray)
+    if kinds:
+        LOG.info(f'audit: stray files by kind: {dict(sorted(kinds.items()))}')
+    # the Finder files are many and harmless, so only the others are listed
+    stray = [path for path in stray if stray_kind(os.path.basename(path)) != '.DS_Store']
+    for label, paths in (('local only', local_only), ('stray (not .DS_Store)', stray), ('partial', partial)):
         LOG.info(f'audit: {len(paths)} {label} files')
         for path in sorted(paths)[:AUDIT_LIST_LIMIT]:
             LOG.info(f'  {label}: {path}')
@@ -845,6 +898,7 @@ def main(settings, dry_run=False):
         LOG.info('access check passed')
 
     if dry_run:
+        log_todo_details(files, statuses)
         for url, local_path, size, _ in todo[:3]:
             LOG.info(f'  {url} ({format_size(size)}) -> {local_path}')
         if len(todo) > 3:

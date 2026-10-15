@@ -30,17 +30,16 @@ working step, so that a new session can resume without re-deriving anything.
 - Tiny dry run: 13 files, 12.29 GB, access check passed. Some remote orbit directories
   hold the processor's `log0003_<orbit>_NN.txt` and `error0003_<orbit>_NN.txt` (24 of
   them in 3 orbits in 2024-06) and may have no `.nc`. These are counted and ignored.
-- **In progress when the session ended:** the full `--dry-run`, started detached
-  (`setsid nohup nice -n 19`) at 16:05 on **derecho2** as pid 1387346. Output is in
-  `logs/dryrun_full.out` and is also appended to `logs/tropomi_download.log`. It lists 97
-  months (2017-11 to 2025-11) at about 15 s each, then stats every expected file and
-  audits the local tree, so it takes about 30 min in all. The last line is `dry run,
-  nothing downloaded`. Check it with `tail logs/dryrun_full.out`; it is alive if
-  `ssh derecho2 'kill -0 1387346'` succeeds.
-- Next: review the dry run numbers (per year: present, missing, wrong size; and the
-  audit's local-only, stray and partial files) with the user, record them in TASKS.md
-  (task 3 results and task 5), then go on to task 4 (the tiny test). A dry run writes no
-  pid file.
+- Task 3 is complete. The full dry run finished (2026-10-14): 38,648 remote files
+  (33.85 TB), 30,712 present, 7,936 to fetch (7.31 TB; 7,848 missing, 88 wrong size).
+  The per-year table and findings are in TASKS.md task 5.
+- Wrong-size files are files SRON rewrote in place (2025-05-29, about 550 bytes more,
+  same name and version), not truncated copies. Size is the only check, so an edit
+  that keeps the size the same goes unnoticed.
+- The dry run now also logs missing files by month, every wrong-size file and stray
+  files by kind (`log_todo_details`, `stray_kind`).
+- Next: task 4 (the tiny test, 13 files and 12.3 GB, 2024-06-01, on a login node).
+  Waiting on the user to start it, and on a decision about cleaning up the 198 strays.
 
 ## Settled design choices (with the user, 2026-10-14)
 
