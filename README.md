@@ -14,6 +14,7 @@ config/config_download.yaml       everything, into the existing record
 config/config_download_tiny.yaml  one day into a separate directory, for a smoke test
 utils/                            config loading, logging
 run_download.sh                   start the download on a login node
+monitor_download.sh               watch the run's footprint on the node, stop it if it grows
 job_download.pbs                  fallback batch job (Casper)
 ```
 
@@ -57,6 +58,16 @@ Stopping is always safe. `kill -INT <pid>` or a plain `kill <pid>` sweeps partia
 files and removes the pid file on the way out, and a rerun picks up exactly what is
 missing. A second run over the same download directory is refused while the first is
 alive.
+
+`run_download.sh` also starts `monitor_download.sh`, detached. It waits for the
+run's pid file and then logs one line every 5 minutes to
+`logs/<log_file stem>_monitor.log`. Each line gives the run's CPU and resident memory,
+your user's memory against the login node's per-user cap (on Derecho, 8 CPUs and
+10 GiB, with page cache from writing counted against the cap), the node's load and
+free memory, and the run's progress and MB/s. If the run uses more than 2 cores or
+2 GiB for two samples in a row, the monitor stops it with `kill -INT`, and a rerun
+resumes. The limits can be set from the environment (`MAX_CORES`, `MAX_RSS_MB`,
+`INTERVAL`, `BREACHES`). `--status` shows the latest line.
 
 `job_download.pbs` is a fallback for the case where a login-node run keeps getting
 killed. Submit it from the repo with `qsub -A "$PBS_ACCOUNT" job_download.pbs`. It

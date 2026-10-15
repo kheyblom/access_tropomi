@@ -16,6 +16,8 @@
 #   ./run_download.sh                                  # everything missing
 #   ./run_download.sh config/config_download_tiny.yaml # one day, smoke test
 #   ./run_download.sh --status                         # is a run in progress?
+#
+# monitor_download.sh is started alongside, see its header.
 
 set -euo pipefail
 
@@ -67,6 +69,11 @@ report_status() {
         echo "    ssh ${RUN_HOST} 'kill -INT ${RUN_PID}'"
     fi
     echo "  progress: tail -n 40 ${LOG_DIR}/${LOG_FILE}"
+    MONITOR_LOG="${LOG_DIR}/${LOG_FILE%.log}_monitor.log"
+    if [[ -f "${MONITOR_LOG}" ]]; then
+        echo "  monitor:"
+        tail -n 1 "${MONITOR_LOG}" | sed 's/^/    /'
+    fi
     return 0
 }
 
@@ -92,7 +99,12 @@ mkdir -p "${LOG_DIR}"
 setsid nohup nice -n 19 uv run python tropomi_download.py --config "${CONFIG}" \
     > nohup.out 2>&1 < /dev/null &
 
+# watch the run's footprint on the node, and stop it if it grows past what a
+# download should need; it waits for the pid file, then follows the run
+setsid nohup ./monitor_download.sh "${CONFIG}" > /dev/null 2>&1 < /dev/null &
+
 echo "started on $(hostname) with ${CONFIG}"
 echo "  the run writes ${PID_FILE} with its host and pid once enumeration finishes"
 echo "  progress:  tail -n 40 ${LOG_DIR}/${LOG_FILE}"
 echo "  status:    ./run_download.sh --status ${CONFIG}"
+echo "  monitor:   tail ${LOG_DIR}/${LOG_FILE%.log}_monitor.log"
