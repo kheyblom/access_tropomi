@@ -46,7 +46,7 @@ Results (2026-10-15, login node derecho1, 2 workers):
 - files open with xarray (`group='target_product'`, `'instrument'`): `nobs` 897,195, `deltad` finite, latitudes -78 to 90.
 - nothing needed fixing. The test data (`data/tropomi_tiny/`, 12.3 GB) is still on disk until I okay deleting it.
 
-# 5. Audit the existing local data
+# 5. Audit the existing local data [COMPLETED]
 Dry-run the real config against the existing tree, then report back before anything downloads (mostly done with the task 3 dry run; rerun the full dry run with the new per-month and wrong-size detail before task 6):
 - missing files by year and month, with their total size, and a check that the quota covers it.
 - local files whose size differs from the remote (possible truncated earlier transfers). Task 6 re-downloads these.
@@ -69,16 +69,21 @@ Results so far (2026-10-14/15):
 
 - 2023 missing by month: 04 296 (a large hole), the rest 2–22 per month.
 - the 2023 wrong-size files are **updated on the server, not truncated**: each is ~545–570 bytes smaller locally. Checked `2023/04/19/28570`: the remote is dated 2025-05-29 and its `history` reads "Last modified on 20250529T074909"; the local copy says 20240216. Re-downloading them is correct. Caveat: SRON edits files in place without a version bump, so an edit that leaves the size unchanged would not be detected.
-- the 4 wrong-size files outside 2023 are not yet inspected.
+- the wrong-size files outside 2023 are **truncated** copies: 2017/11/16/482 at 23.5%, 2018/06/21/3567 at 98.8%, 2019/02/15/6953 at 99.7% (the 2024 one is past the listing limit). All are fetched again.
+- rerun of the full dry run (2026-10-15 09:03–09:25): the same totals; 0 stray files after the cleanup. Missing by month: 2018-08 7, 2019-05 1, 2020-09 25, 2023-02 12, 2023-03 2, 2023-04 296, 2023-05 17, 2023-06 22, 2023-07 8, 2023-08 12, 2023-09 7, 2023-10 11, 2023-11 16, 2023-12 8, 2024-01 37, 2024-02 81, 2024-03 86, 2024-04 79, 2024-06 383, 2024-07 348, 2024-08 434, 2024-09 406, 2024-10 324, 2024-11 310, 2024-12 422, 2025-01 379, 2025-02 372, 2025-03 410, 2025-04 398, 2025-05 429, 2025-06 404, 2025-07 427, 2025-08 429, 2025-09 416, 2025-10 423, 2025-11 407.
 - 0 local-only files. 198 stray files: mostly `.DS_Store`, plus `.smbdelete*` and `*.nc?action=show` (none in 2023 apart from 18 `.DS_Store`). **Cleanup needs my decision.**
 - the server's orbit directories also hold SRON's own working files (`log*.txt`, `error*.txt`, `find_gap.py`, `nohup.out`, `rm.sh`): 1,309 in 190 orbits. These are ignored.
 
-# 6. Download the missing files
+# 6. Download the missing files [IN PROGRESS]
 Fetch everything the audit lists as missing or the wrong size into the existing tree.
 - needs my approval before starting. This is likely several TB and may take more than a day.
 - default route: `./run_download.sh` (detached, `nice -n 19` on a login node). Fallback: `qsub -A "$PBS_ACCOUNT" job_download.pbs` on Casper.
 - monitor with `./run_download.sh --status`, and rerun if verification reports missing files.
 - done when verification reports every remote file present locally at the right size.
+
+Run (approved 2026-10-15: login node, monitored):
+- started 2026-10-15 ~09:27 on derecho1 with `./run_download.sh` (4 workers, `nice -n 19`), together with `monitor_download.sh`, which logs every 5 min to `logs/tropomi_download_monitor.log` and stops the run at > 2 cores or > 2 GiB RSS. The login node caps the user at 8 CPUs and 10 GiB.
+- expected: transfers start ~09:45 after the listing. 7.31 TB at 100–200 MB/s is 10–21 h.
 
 # Later (not scheduled)
 - keeping the record current with periodic top-up reruns, if SRON keeps adding data (the `hdo/2025` directory was last modified 2025-11-10).

@@ -46,9 +46,18 @@ working step, so that a new session can resume without re-deriving anything.
   the 7.31 TB gap is roughly 10–20 h.
 - The test data is still at `/glade/derecho/scratch/kheyblom/data/tropomi_tiny/`
   (13 files, 12.3 GB). Delete it only with the user's okay.
-- Next: task 5 wrap-up (rerun the full dry run for the new detail, and inspect the 4
-  wrong-size files outside 2023), then task 6, the real download, which needs the
-  user's approval and a choice of route.
+- Task 5 is complete (2026-10-15); the details are in TASKS.md. The wrong-size files
+  outside 2023 are truncated copies. The tiny test data has been deleted.
+- **Task 6 is running**: the full download started at ~09:27 on 2026-10-15 on
+  **derecho1** (`./run_download.sh`, 4 workers). The user approved a login-node run on
+  the condition that it is monitored. `monitor_download.sh` runs alongside
+  (`logs/tropomi_download_monitor.log`, one line every 5 min) and stops the run with
+  SIGINT at > 2 cores or > 2 GiB RSS for 2 samples. The user cgroup on login nodes is
+  8 CPUs and 10 GiB, page cache included.
+- Check it with `./run_download.sh --status` (it shows the last monitor line) and
+  `tail logs/tropomi_download.log`. If the run died, rerun `./run_download.sh`; it
+  resumes, and the listing takes about 20 min first. When it ends: confirm `verified
+  38648/38648` and `done :-)`, then record the results in TASKS.md task 6 and here.
 
 ## Settled design choices (with the user, 2026-10-14)
 
