@@ -110,8 +110,7 @@ building):
   failures as transient: wait, then rerun. Don't report them to SRON unless they
   persist across later reruns.
 - Throughput: about 50 MB/s per connection, and 4 workers gave 150–200 MB/s (2026-10-15).
-  Its rate limits are unknown. Measure them in the task 4 test and keep
-  the worker count small.
+  Its rate limits are unknown, so keep the worker count small.
 
 ## Local data (checked 2026-10-14)
 
