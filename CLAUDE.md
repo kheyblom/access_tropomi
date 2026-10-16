@@ -48,16 +48,17 @@ working step, so that a new session can resume without re-deriving anything.
   (13 files, 12.3 GB). Delete it only with the user's okay.
 - Task 5 is complete (2026-10-15); the details are in TASKS.md. The wrong-size files
   outside 2023 are truncated copies. The tiny test data has been deleted.
-- **Task 6 is running**: the full download started at ~09:27 on 2026-10-15 on
-  **derecho1** (`./run_download.sh`, 4 workers). The user approved a login-node run on
-  the condition that it is monitored. `monitor_download.sh` runs alongside
-  (`logs/tropomi_download_monitor.log`, one line every 5 min) and stops the run with
-  SIGINT at > 2 cores or > 2 GiB RSS for 2 samples. The user cgroup on login nodes is
-  8 CPUs and 10 GiB, page cache included.
-- Check it with `./run_download.sh --status` (it shows the last monitor line) and
-  `tail logs/tropomi_download.log`. If the run died, rerun `./run_download.sh`; it
-  resumes, and the listing takes about 20 min first. When it ends: confirm `verified
-  38648/38648` and `done :-)`, then record the results in TASKS.md task 6 and here.
+- **Task 6:** the first full run finished 2026-10-15 22:46. 7,875 downloaded and 61
+  failed (500s, consistent with tape staging). All 61 answered 206 on 2026-10-16 08:55.
+  A **rerun started 2026-10-16 ~08:58 on derecho2** (`./run_download.sh`, with the
+  monitor). The details are in TASKS.md task 6.
+- Check it with `./run_download.sh --status` and `tail logs/tropomi_download.log`.
+  Done when it shows `verified 38648/38648` and `done :-)`; then mark task 6 complete.
+  If files fail again, wait some hours (staging) and rerun.
+- The user approved a login-node run on the condition that it is monitored.
+  `monitor_download.sh` logs to `logs/tropomi_download_monitor.log` and stops the run
+  at > 2 cores or > 2 GiB RSS. The user cgroup on login nodes is 8 CPUs and 10 GiB,
+  page cache included.
 
 ## Settled design choices (with the user, 2026-10-14)
 
