@@ -48,17 +48,18 @@ working step, so that a new session can resume without re-deriving anything.
   (13 files, 12.3 GB). Delete it only with the user's okay.
 - Task 5 is complete (2026-10-15); the details are in TASKS.md. The wrong-size files
   outside 2023 are truncated copies. The tiny test data has been deleted.
-- **Task 6:** the first full run finished 2026-10-15 22:46. 7,875 downloaded and 61
-  failed (500s, consistent with tape staging). All 61 answered 206 on 2026-10-16 08:55.
-  A **rerun started 2026-10-16 ~08:58 on derecho2** (`./run_download.sh`, with the
-  monitor). The details are in TASKS.md task 6.
-- Check it with `./run_download.sh --status` and `tail logs/tropomi_download.log`.
-  Done when it shows `verified 38648/38648` and `done :-)`; then mark task 6 complete.
-  If files fail again, wait some hours (staging) and rerun.
-- The user approved a login-node run on the condition that it is monitored.
-  `monitor_download.sh` logs to `logs/tropomi_download_monitor.log` and stops the run
-  at > 2 cores or > 2 GiB RSS. The user cgroup on login nodes is 8 CPUs and 10 GiB,
-  page cache included.
+- **Task 6 is complete (2026-10-16 09:16).** The first run (2026-10-15, about 13 h)
+  fetched 7,875 files, and 61 failed with 500s (tape staging). The rerun the next
+  morning got all 61. The full record verifies: 38,648/38,648 files, 33.85 TB, under
+  `/glade/derecho/scratch/kheyblom/data/wisosat/raw/TROPOMI/tropomi.grid.surfsara.nl/hdo/`.
+- **All scheduled tasks are complete.** TASKS.md *Later* has the candidates: periodic
+  top-up reruns (SRON still rewrites files, e.g. one 2025-11 orbit was modified
+  2026-02-13), and a campaign copy because of the scratch purge. Ask the user before
+  starting either.
+- Login-node runs are allowed when monitored (the user's condition).
+  `run_download.sh` starts `monitor_download.sh`, which logs to
+  `logs/<stem>_monitor.log` and stops the run at > 2 cores or > 2 GiB RSS. The user
+  cgroup on login nodes is 8 CPUs and 10 GiB, page cache included.
 
 ## Settled design choices (with the user, 2026-10-14)
 

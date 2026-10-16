@@ -74,7 +74,7 @@ Results so far (2026-10-14/15):
 - 0 local-only files. 198 stray files: mostly `.DS_Store`, plus `.smbdelete*` and `*.nc?action=show` (none in 2023 apart from 18 `.DS_Store`). **Cleanup needs my decision.**
 - the server's orbit directories also hold SRON's own working files (`log*.txt`, `error*.txt`, `find_gap.py`, `nohup.out`, `rm.sh`): 1,309 in 190 orbits. These are ignored.
 
-# 6. Download the missing files [IN PROGRESS]
+# 6. Download the missing files [COMPLETED]
 Fetch everything the audit lists as missing or the wrong size into the existing tree.
 - needs my approval before starting. This is likely several TB and may take more than a day.
 - default route: `./run_download.sh` (detached, `nice -n 19` on a login node). Fallback: `qsub -A "$PBS_ACCOUNT" job_download.pbs` on Casper.
@@ -91,9 +91,11 @@ Run (approved 2026-10-15: login node, monitored):
 - **first run finished 2026-10-15 22:46** (09:38–22:46, ~13 h, 150–200 MB/s): downloaded 7,875 files, **61 failed** (all 500 on 3 attempts; 4 more recovered on retry). Verified 38,587/38,648 (33.80 TB): 60 missing, 1 incomplete (`2023/04/19/28571`, the old rewritten copy left in place). The failures are spread over 2018-08 to 2025-11, mostly 2024-12 to 2025-06. The monitor never flagged anything: 0.5–0.7 cores, ~350 MB RSS.
 - 2026-10-16 08:55: a one-byte probe of all 61 failed files returned **206 for every one**. This strongly supports the staging hypothesis: our failed attempts triggered staging, which completed overnight.
 - rerun started 2026-10-16 ~08:58 on derecho2 (`./run_download.sh`, with the monitor). It should fetch just the 61 files (~60 GB) after the ~20 min listing.
+- **rerun finished 2026-10-16 09:16**: all 61 downloaded on the first attempt, 0 errors. **Verified 38,648/38,648 files (33.85 TB), `done :-)`.** No `.part` files are left.
+- spot checks: `2023/04/19/28571` is now the rewritten copy (`history` "Last modified on 20250528T071342") and opens with xarray. `2025/11/01/41721` was last modified on the server on **2026-02-13**, so SRON still edits files months after release (see *Later*).
 
 # Later (not scheduled)
-- keeping the record current with periodic top-up reruns, if SRON keeps adding data (the `hdo/2025` directory was last modified 2025-11-10).
+- keeping the record current with periodic top-up reruns, if SRON keeps adding data (the `hdo/2025` directory was last modified 2025-11-10). SRON also rewrites existing files in place (seen 2025-05 and 2026-02). A rerun re-fetches those only when the size changed, so a same-size edit would need a timestamp or checksum check. That is not built.
 - Derecho scratch is subject to purge. The record may eventually need a copy on campaign storage.
 
 # Remote and local facts (checked 2026-10-14)
